@@ -1,0 +1,8 @@
+*.o
+*.obj
+*.exe
+*.out
+build/
+cmake-build-*/
+.idea/workspace.xml
+.idea/httpRequests/
