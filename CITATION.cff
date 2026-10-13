@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+title: "Asim-Library"
+message: "If you use or reference this project, please cite this repository."
+type: software
+authors:
+  - family-names: Kumar
+    given-names: Brajesh
+repository-code: "https://github.com/Brajesh31/Asim-Library"
+license: MIT
+version: "1.0.0"
+date-released: "2025-01-01"
