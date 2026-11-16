@@ -1,0 +1,14 @@
+flowchart TD
+  A[Update height and calculate balance] --> B{Balance factor}
+  B -->|Greater than 1| C{Left child balance}
+  B -->|Less than -1| D{Right child balance}
+  B -->|Within -1 to 1| E[No rotation required]
+  C -->|Zero or positive| F[Right rotation: LL]
+  C -->|Negative| G[Left child left, then node right: LR]
+  D -->|Zero or negative| H[Left rotation: RR]
+  D -->|Positive| I[Right child right, then node left: RL]
+  E --> J([Return subtree root])
+  F --> J
+  G --> J
+  H --> J
+  I --> J
