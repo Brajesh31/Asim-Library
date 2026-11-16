@@ -1,0 +1,12 @@
+flowchart TD
+  A([Insert or delete]) --> B[Follow BST ordering]
+  B --> C[Modify affected child link]
+  C --> D[Return through ancestors]
+  D --> E[Recalculate height]
+  E --> F[Calculate balance factor]
+  F --> G{Outside -1 to +1?}
+  G -->|No| H[Keep node]
+  G -->|Yes| I[Select LL, RR, LR or RL rotation]
+  I --> J[Rotate subtree]
+  H --> K([Return new subtree root])
+  J --> K
