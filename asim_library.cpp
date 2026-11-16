@@ -1,311 +1,418 @@
 #include "asim_library.h"
 
-// -------------------------------------
-// Stack Implementation
-// -------------------------------------
+#include <algorithm>
+#include <iostream>
+#include <utility>
 
-Stack::Stack(int size) {
-    capacity = size;
-    arr = new int[size];
-    top = -1;
-}
+// -----------------------------------------------------------------------------
+// Stack
+// -----------------------------------------------------------------------------
 
-Stack::~Stack() {
-    delete[] arr;
+Stack::Stack(int size)
+    : elements_(), capacity_(size < 0 ? 0U : static_cast<std::size_t>(size)) {
+    if (size < 0) {
+        throw std::invalid_argument("Stack capacity cannot be negative.");
+    }
+    elements_.reserve(capacity_);
 }
 
 void Stack::push(int element) {
     if (isFull()) {
-        cout << "Stack overflow!\n";
-        return;
+        throw std::overflow_error("Cannot push into a full stack.");
     }
-    arr[++top] = element;
+    elements_.push_back(element);
 }
 
 int Stack::pop() {
     if (isEmpty()) {
-        cout << "Stack underflow!\n";
-        return -1;
+        throw std::underflow_error("Cannot pop from an empty stack.");
     }
-    return arr[top--];
+    const int value = elements_.back();
+    elements_.pop_back();
+    return value;
 }
 
-int Stack::peek() {
+int Stack::peek() const {
     if (isEmpty()) {
-        cout << "Stack is empty!\n";
-        return -1;
+        throw std::underflow_error("Cannot peek at an empty stack.");
     }
-    return arr[top];
+    return elements_.back();
 }
 
-bool Stack::isEmpty() {
-    return top == -1;
-}
-
-bool Stack::isFull() {
-    return top == capacity - 1;
-}
+bool Stack::isEmpty() const noexcept { return elements_.empty(); }
+bool Stack::isFull() const noexcept { return elements_.size() == capacity_; }
 
 void Stack::rotateRight() {
-    if (isEmpty()) return;
-    int last = arr[top];
-    for (int i = top; i > 0; i--) {
-        arr[i] = arr[i - 1];
+    if (elements_.size() > 1U) {
+        std::rotate(elements_.begin(), elements_.end() - 1, elements_.end());
     }
-    arr[0] = last;
 }
 
 void Stack::rotateLeft() {
-    if (isEmpty()) return;
-    int first = arr[0];
-    for (int i = 0; i < top; i++) {
-        arr[i] = arr[i + 1];
+    if (elements_.size() > 1U) {
+        std::rotate(elements_.begin(), elements_.begin() + 1, elements_.end());
     }
-    arr[top] = first;
 }
 
-void Stack::display() {
-    for (int i = 0; i <= top; i++) {
-        cout << arr[i] << " ";
+void Stack::display() const { display(std::cout); }
+
+void Stack::display(std::ostream& output) const {
+    for (std::size_t i = 0; i < elements_.size(); ++i) {
+        if (i != 0U) output << ' ';
+        output << elements_[i];
     }
-    cout << endl;
+    output << '\n';
 }
 
-bool Stack::search(int element) {
-    for (int i = 0; i <= top; i++) {
-        if (arr[i] == element) return true;
-    }
-    return false;
+bool Stack::search(int element) const {
+    return std::find(elements_.begin(), elements_.end(), element) != elements_.end();
 }
 
-// -------------------------------------
-// Binary Search Tree (BST) Implementation
-// -------------------------------------
+int Stack::size() const noexcept { return static_cast<int>(elements_.size()); }
+int Stack::capacity() const noexcept { return static_cast<int>(capacity_); }
+void Stack::clear() noexcept { elements_.clear(); }
+
+// -----------------------------------------------------------------------------
+// Binary Search Tree
+// -----------------------------------------------------------------------------
 
 BSTNode::BSTNode(int value) : data(value), left(nullptr), right(nullptr) {}
+BST::BST() noexcept : root_(nullptr), size_(0U) {}
+BST::~BST() { clear(); }
 
-BST::BST() : root(nullptr) {}
+BSTNode* BST::clone(const BSTNode* node) {
+    if (node == nullptr) return nullptr;
+    BSTNode* copy = new BSTNode(node->data);
+    try {
+        copy->left = clone(node->left);
+        copy->right = clone(node->right);
+    } catch (...) {
+        destroy(copy);
+        throw;
+    }
+    return copy;
+}
 
-BSTNode* BST::insert(BSTNode* node, int value) {
-    if (node == nullptr) return new BSTNode(value);
-    if (value < node->data) node->left = insert(node->left, value);
-    else if (value > node->data) node->right = insert(node->right, value);
+void BST::destroy(BSTNode* node) noexcept {
+    if (node == nullptr) return;
+    destroy(node->left);
+    destroy(node->right);
+    delete node;
+}
+
+BST::BST(const BST& other) : root_(clone(other.root_)), size_(other.size_) {}
+
+BST& BST::operator=(const BST& other) {
+    if (this != &other) {
+        BST copy(other);
+        std::swap(root_, copy.root_);
+        std::swap(size_, copy.size_);
+    }
+    return *this;
+}
+
+BST::BST(BST&& other) noexcept : root_(other.root_), size_(other.size_) {
+    other.root_ = nullptr;
+    other.size_ = 0U;
+}
+
+BST& BST::operator=(BST&& other) noexcept {
+    if (this != &other) {
+        clear();
+        root_ = other.root_;
+        size_ = other.size_;
+        other.root_ = nullptr;
+        other.size_ = 0U;
+    }
+    return *this;
+}
+
+BSTNode* BST::insert(BSTNode* node, int value, bool& inserted) {
+    if (node == nullptr) {
+        inserted = true;
+        return new BSTNode(value);
+    }
+    if (value < node->data) node->left = insert(node->left, value, inserted);
+    else if (value > node->data) node->right = insert(node->right, value, inserted);
     return node;
 }
 
 void BST::insert(int value) {
-    root = insert(root, value);
+    bool inserted = false;
+    root_ = insert(root_, value, inserted);
+    if (inserted) ++size_;
 }
 
-void BST::inOrder(BSTNode* node) {
+void BST::inOrder(const BSTNode* node, std::ostream& output) {
     if (node == nullptr) return;
-    inOrder(node->left);
-    cout << node->data << " ";
-    inOrder(node->right);
+    inOrder(node->left, output);
+    output << node->data << ' ';
+    inOrder(node->right, output);
 }
 
-void BST::inOrderTraversal() {
-    inOrder(root);
-    cout << endl;
+void BST::inOrderTraversal() const { inOrderTraversal(std::cout); }
+
+void BST::inOrderTraversal(std::ostream& output) const {
+    inOrder(root_, output);
+    output << '\n';
 }
 
-BSTNode* BST::search(BSTNode* node, int value) {
-    if (node == nullptr || node->data == value) return node;
-    if (value < node->data) return search(node->left, value);
-    return search(node->right, value);
+const BSTNode* BST::search(const BSTNode* node, int value) noexcept {
+    while (node != nullptr) {
+        if (value == node->data) return node;
+        node = value < node->data ? node->left : node->right;
+    }
+    return nullptr;
 }
 
-bool BST::search(int value) {
-    return search(root, value) != nullptr;
-}
+bool BST::search(int value) const { return search(root_, value) != nullptr; }
 
-BSTNode* BST::findMin(BSTNode* node) {
-    while (node->left) node = node->left;
+BSTNode* BST::findMin(BSTNode* node) noexcept {
+    while (node != nullptr && node->left != nullptr) node = node->left;
     return node;
 }
 
-BSTNode* BST::deleteNode(BSTNode* node, int value) {
-    if (node == nullptr) return node;
+BSTNode* BST::deleteNode(BSTNode* node, int value, bool& deleted) {
+    if (node == nullptr) return nullptr;
     if (value < node->data) {
-        node->left = deleteNode(node->left, value);
+        node->left = deleteNode(node->left, value, deleted);
     } else if (value > node->data) {
-        node->right = deleteNode(node->right, value);
+        node->right = deleteNode(node->right, value, deleted);
     } else {
+        deleted = true;
         if (node->left == nullptr) {
-            BSTNode* temp = node->right;
+            BSTNode* right = node->right;
             delete node;
-            return temp;
-        } else if (node->right == nullptr) {
-            BSTNode* temp = node->left;
-            delete node;
-            return temp;
+            return right;
         }
-        BSTNode* temp = findMin(node->right);
-        node->data = temp->data;
-        node->right = deleteNode(node->right, temp->data);
+        if (node->right == nullptr) {
+            BSTNode* left = node->left;
+            delete node;
+            return left;
+        }
+        BSTNode* successor = findMin(node->right);
+        node->data = successor->data;
+        bool successorDeleted = false;
+        node->right = deleteNode(node->right, successor->data, successorDeleted);
     }
     return node;
 }
 
 void BST::deleteNode(int value) {
-    root = deleteNode(root, value);
+    bool deleted = false;
+    root_ = deleteNode(root_, value, deleted);
+    if (deleted) --size_;
 }
 
-// -------------------------------------
-// AVL Tree Implementation
-// -------------------------------------
+int BST::height(const BSTNode* node) noexcept {
+    if (node == nullptr) return 0;
+    return 1 + std::max(height(node->left), height(node->right));
+}
 
-AVLNode::AVLNode(int value) : data(value), left(nullptr), right(nullptr), height(1) {}
+int BST::height() const noexcept { return height(root_); }
+bool BST::empty() const noexcept { return root_ == nullptr; }
+std::size_t BST::size() const noexcept { return size_; }
 
-AVLTree::AVLTree() : root(nullptr) {}
+void BST::clear() noexcept {
+    destroy(root_);
+    root_ = nullptr;
+    size_ = 0U;
+}
 
-int AVLTree::height(AVLNode* node) {
+// -----------------------------------------------------------------------------
+// AVL Tree
+// -----------------------------------------------------------------------------
+
+AVLNode::AVLNode(int value)
+    : data(value), left(nullptr), right(nullptr), height(1) {}
+
+AVLTree::AVLTree() noexcept : root_(nullptr), size_(0U) {}
+AVLTree::~AVLTree() { clear(); }
+
+AVLNode* AVLTree::clone(const AVLNode* node) {
+    if (node == nullptr) return nullptr;
+    AVLNode* copy = new AVLNode(node->data);
+    copy->height = node->height;
+    try {
+        copy->left = clone(node->left);
+        copy->right = clone(node->right);
+    } catch (...) {
+        destroy(copy);
+        throw;
+    }
+    return copy;
+}
+
+void AVLTree::destroy(AVLNode* node) noexcept {
+    if (node == nullptr) return;
+    destroy(node->left);
+    destroy(node->right);
+    delete node;
+}
+
+AVLTree::AVLTree(const AVLTree& other)
+    : root_(clone(other.root_)), size_(other.size_) {}
+
+AVLTree& AVLTree::operator=(const AVLTree& other) {
+    if (this != &other) {
+        AVLTree copy(other);
+        std::swap(root_, copy.root_);
+        std::swap(size_, copy.size_);
+    }
+    return *this;
+}
+
+AVLTree::AVLTree(AVLTree&& other) noexcept : root_(other.root_), size_(other.size_) {
+    other.root_ = nullptr;
+    other.size_ = 0U;
+}
+
+AVLTree& AVLTree::operator=(AVLTree&& other) noexcept {
+    if (this != &other) {
+        clear();
+        root_ = other.root_;
+        size_ = other.size_;
+        other.root_ = nullptr;
+        other.size_ = 0U;
+    }
+    return *this;
+}
+
+int AVLTree::height(const AVLNode* node) noexcept {
     return node == nullptr ? 0 : node->height;
 }
 
-int AVLTree::balanceFactor(AVLNode* node) {
+int AVLTree::balanceFactor(const AVLNode* node) noexcept {
     return node == nullptr ? 0 : height(node->left) - height(node->right);
 }
 
-AVLNode* AVLTree::rotateRight(AVLNode* y) {
+void AVLTree::updateHeight(AVLNode* node) noexcept {
+    if (node != nullptr) {
+        node->height = 1 + std::max(height(node->left), height(node->right));
+    }
+}
+
+AVLNode* AVLTree::rotateRight(AVLNode* y) noexcept {
     AVLNode* x = y->left;
-    AVLNode* T2 = x->right;
+    AVLNode* middle = x->right;
     x->right = y;
-    y->left = T2;
-    y->height = max(height(y->left), height(y->right)) + 1;
-    x->height = max(height(x->left), height(x->right)) + 1;
+    y->left = middle;
+    updateHeight(y);
+    updateHeight(x);
     return x;
 }
 
-AVLNode* AVLTree::rotateLeft(AVLNode* x) {
+AVLNode* AVLTree::rotateLeft(AVLNode* x) noexcept {
     AVLNode* y = x->right;
-    AVLNode* T2 = y->left;
+    AVLNode* middle = y->left;
     y->left = x;
-    x->right = T2;
-    x->height = max(height(x->left), height(x->right)) + 1;
-    y->height = max(height(y->left), height(y->right)) + 1;
+    x->right = middle;
+    updateHeight(x);
+    updateHeight(y);
     return y;
 }
 
-AVLNode* AVLTree::insert(AVLNode* node, int value) {
-    if (node == nullptr) return new AVLNode(value);
-
-    if (value < node->data) node->left = insert(node->left, value);
-    else if (value > node->data) node->right = insert(node->right, value);
-
-    node->height = 1 + max(height(node->left), height(node->right));
-
-    int balance = balanceFactor(node);
-
-    // Left Left (LL) case
-    if (balance > 1 && value < node->left->data) {
+AVLNode* AVLTree::rebalance(AVLNode* node) noexcept {
+    if (node == nullptr) return nullptr;
+    updateHeight(node);
+    const int balance = balanceFactor(node);
+    if (balance > 1) {
+        if (balanceFactor(node->left) < 0) node->left = rotateLeft(node->left);
         return rotateRight(node);
     }
-
-    // Right Right (RR) case
-    if (balance < -1 && value > node->right->data) {
+    if (balance < -1) {
+        if (balanceFactor(node->right) > 0) node->right = rotateRight(node->right);
         return rotateLeft(node);
     }
-
-    // Left Right (LR) case
-    if (balance > 1 && value > node->left->data) {
-        node->left = rotateLeft(node->left);
-        return rotateRight(node);
-    }
-
-    // Right Left (RL) case
-    if (balance < -1 && value < node->right->data) {
-        node->right = rotateRight(node->right);
-        return rotateLeft(node);
-    }
-
     return node;
+}
+
+AVLNode* AVLTree::insert(AVLNode* node, int value, bool& inserted) {
+    if (node == nullptr) {
+        inserted = true;
+        return new AVLNode(value);
+    }
+    if (value < node->data) node->left = insert(node->left, value, inserted);
+    else if (value > node->data) node->right = insert(node->right, value, inserted);
+    return inserted ? rebalance(node) : node;
 }
 
 void AVLTree::insert(int value) {
-    root = insert(root, value);
+    bool inserted = false;
+    root_ = insert(root_, value, inserted);
+    if (inserted) ++size_;
 }
 
-AVLNode* AVLTree::deleteNode(AVLNode* node, int value) {
-    if (node == nullptr) return node;
-
-    if (value < node->data) node->left = deleteNode(node->left, value);
-    else if (value > node->data) node->right = deleteNode(node->right, value);
-    else {
-        if (node->left == nullptr || node->right == nullptr) {
-            AVLNode* temp = node->left ? node->left : node->right;
-            if (temp == nullptr) {
-                temp = node;
-                node = nullptr;
-            } else {
-                *node = *temp;
-            }
-            delete temp;
-        } else {
-            AVLNode* temp = findMin(node->right);
-            node->data = temp->data;
-            node->right = deleteNode(node->right, temp->data);
-        }
-    }
-
-    if (node == nullptr) return node;
-
-    node->height = 1 + max(height(node->left), height(node->right));
-
-    int balance = balanceFactor(node);
-
-    // Left Left (LL) case
-    if (balance > 1 && balanceFactor(node->left) >= 0) {
-        return rotateRight(node);
-    }
-
-    // Right Right (RR) case
-    if (balance < -1 && balanceFactor(node->right) <= 0) {
-        return rotateLeft(node);
-    }
-
-    // Left Right (LR) case
-    if (balance > 1 && balanceFactor(node->left) < 0) {
-        node->left = rotateLeft(node->left);
-        return rotateRight(node);
-    }
-
-    // Right Left (RL) case
-    if (balance < -1 && balanceFactor(node->right) > 0) {
-        node->right = rotateRight(node->right);
-        return rotateLeft(node);
-    }
-
+AVLNode* AVLTree::findMin(AVLNode* node) noexcept {
+    while (node != nullptr && node->left != nullptr) node = node->left;
     return node;
 }
 
+AVLNode* AVLTree::deleteNode(AVLNode* node, int value, bool& deleted) {
+    if (node == nullptr) return nullptr;
+    if (value < node->data) {
+        node->left = deleteNode(node->left, value, deleted);
+    } else if (value > node->data) {
+        node->right = deleteNode(node->right, value, deleted);
+    } else {
+        deleted = true;
+        if (node->left == nullptr || node->right == nullptr) {
+            AVLNode* child = node->left != nullptr ? node->left : node->right;
+            delete node;
+            return child;
+        }
+        AVLNode* successor = findMin(node->right);
+        node->data = successor->data;
+        bool successorDeleted = false;
+        node->right = deleteNode(node->right, successor->data, successorDeleted);
+    }
+    return deleted ? rebalance(node) : node;
+}
+
 void AVLTree::deleteNode(int value) {
-    root = deleteNode(root, value);
+    bool deleted = false;
+    root_ = deleteNode(root_, value, deleted);
+    if (deleted) --size_;
 }
 
-void AVLTree::inOrder(AVLNode* node) {
+void AVLTree::inOrder(const AVLNode* node, std::ostream& output) {
     if (node == nullptr) return;
-    inOrder(node->left);
-    cout << node->data << " ";
-    inOrder(node->right);
+    inOrder(node->left, output);
+    output << node->data << ' ';
+    inOrder(node->right, output);
 }
 
-void AVLTree::inOrderTraversal() {
-    inOrder(root);
-    cout << endl;
+void AVLTree::inOrderTraversal() const { inOrderTraversal(std::cout); }
+
+void AVLTree::inOrderTraversal(std::ostream& output) const {
+    inOrder(root_, output);
+    output << '\n';
 }
 
-bool AVLTree::search(int value) {
-    AVLNode* current = root;
+bool AVLTree::search(int value) const noexcept {
+    const AVLNode* current = root_;
     while (current != nullptr) {
-        if (current->data == value) return true;
-        else if (value < current->data) current = current->left;
-        else current = current->right;
+        if (value == current->data) return true;
+        current = value < current->data ? current->left : current->right;
     }
     return false;
 }
 
-AVLNode* AVLTree::findMin(AVLNode* node) {
-    while (node->left != nullptr) node = node->left;
-    return node;
+bool AVLTree::isBalanced(const AVLNode* node) noexcept {
+    if (node == nullptr) return true;
+    const int balance = balanceFactor(node);
+    return balance >= -1 && balance <= 1 &&
+           std::abs(height(node->left) - height(node->right)) <= 1 &&
+           isBalanced(node->left) && isBalanced(node->right);
+}
+
+bool AVLTree::isBalanced() const noexcept { return isBalanced(root_); }
+bool AVLTree::empty() const noexcept { return root_ == nullptr; }
+std::size_t AVLTree::size() const noexcept { return size_; }
+int AVLTree::height() const noexcept { return height(root_); }
+
+void AVLTree::clear() noexcept {
+    destroy(root_);
+    root_ = nullptr;
+    size_ = 0U;
 }
