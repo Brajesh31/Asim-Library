@@ -1,0 +1,11 @@
+flowchart TD
+  A[Checkout source] --> B[Configure GCC build]
+  B --> C[Build library, demo, tests]
+  C --> D[Run CTest]
+  D --> E[Run demonstration]
+  E --> F[Configure Clang build]
+  F --> G[Build and run tests]
+  G --> H[Sanitizer build]
+  H --> I[Address and undefined behavior checks]
+  I --> J[Documentation and secret checks]
+  J --> K([Review actual results])
