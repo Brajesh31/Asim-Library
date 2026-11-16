@@ -1,0 +1,16 @@
+flowchart TD
+  A([Stack operation]) --> B{Operation}
+  B -->|push| C{Current size equals capacity?}
+  C -->|Yes| D[Throw overflow_error]
+  C -->|No| E[Append value]
+  B -->|pop or peek| F{Stack empty?}
+  F -->|Yes| G[Throw underflow_error]
+  F -->|No| H[Return top value]
+  B -->|rotateLeft| I[Move first occupied value to end]
+  B -->|rotateRight| J[Move last occupied value to beginning]
+  E --> K([Complete])
+  D --> K
+  G --> K
+  H --> K
+  I --> K
+  J --> K
