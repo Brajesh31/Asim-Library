@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="480" viewBox="0 0 1600 480" role="img" aria-labelledby="t d">
+<title id="t">Asim-Library C++ data structures</title>
+<desc id="d">A modern educational illustration showing a stack, a binary search tree, and an AVL tree.</desc>
+<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#09172e"/><stop offset="1" stop-color="#1c315b"/></linearGradient><linearGradient id="accent"><stop stop-color="#22d3ee"/><stop offset="1" stop-color="#a78bfa"/></linearGradient><style>.title{font:800 48px Inter,Arial,sans-serif;fill:#f8fafc}.sub{font:500 22px Inter,Arial,sans-serif;fill:#cbd5e1}.head{font:700 20px Inter,Arial,sans-serif;fill:#f8fafc}.small{font:500 15px Inter,Arial,sans-serif;fill:#cbd5e1}.node{fill:#17345a;stroke:#67e8f9;stroke-width:2.5}.line{stroke:url(#accent);stroke-width:4;fill:none;stroke-linecap:round}</style></defs>
+<rect width="1600" height="480" rx="28" fill="url(#bg)"/>
+<circle cx="1450" cy="20" r="250" fill="#6366f1" opacity=".1"/><circle cx="100" cy="490" r="240" fill="#06b6d4" opacity=".1"/>
+<text x="80" y="115" class="title">Asim-Library</text><text x="82" y="160" class="sub">Learn data structures through readable C++17 implementations</text>
+<text x="82" y="220" class="small">STACK</text>
+<g class="node"><rect x="95" y="250" width="130" height="48" rx="8"/><rect x="95" y="305" width="130" height="48" rx="8"/><rect x="95" y="360" width="130" height="48" rx="8"/></g>
+<g class="head" text-anchor="middle"><text x="160" y="281">30</text><text x="160" y="336">20</text><text x="160" y="391">10</text></g>
+<text x="420" y="220" class="small">BINARY SEARCH TREE</text>
+<g class="line"><path d="M530 280L460 345M530 280L600 345M460 365L420 410M460 365L500 410"/></g>
+<g class="node"><circle cx="530" cy="270" r="31"/><circle cx="460" cy="350" r="28"/><circle cx="600" cy="350" r="28"/><circle cx="420" cy="420" r="22"/><circle cx="500" cy="420" r="22"/></g>
+<g class="head" text-anchor="middle"><text x="530" y="277">50</text><text x="460" y="357">30</text><text x="600" y="357">70</text><text x="420" y="426">20</text><text x="500" y="426">40</text></g>
+<text x="890" y="220" class="small">AVL TREE</text>
+<g class="line"><path d="M1010 280L940 345M1010 280L1080 345M940 365L900 410M940 365L980 410"/></g>
+<g class="node"><circle cx="1010" cy="270" r="31"/><circle cx="940" cy="350" r="28"/><circle cx="1080" cy="350" r="28"/><circle cx="900" cy="420" r="22"/><circle cx="980" cy="420" r="22"/></g>
+<g class="head" text-anchor="middle"><text x="1010" y="277">30</text><text x="940" y="357">20</text><text x="1080" y="357">40</text><text x="900" y="426">10</text><text x="980" y="426">25</text></g>
+<rect x="1240" y="235" width="290" height="165" rx="18" fill="#122746" stroke="url(#accent)" stroke-width="2"/>
+<text x="1385" y="285" text-anchor="middle" class="head">C++17</text><text x="1385" y="325" text-anchor="middle" class="sub">Stack · BST · AVL</text><text x="1385" y="360" text-anchor="middle" class="small">Build · Learn · Test</text>
+</svg>
