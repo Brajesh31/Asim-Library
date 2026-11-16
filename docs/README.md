@@ -38,7 +38,6 @@ This folder is the detailed technical reference for Asim-Library. The guides des
 - [Troubleshooting](./troubleshooting.md)
 - [Limitations](./limitations.md)
 - [FAQ](./faq.md)
-- [Accessibility](./accessibility.md)
 - [Database and persistence scope](./database.md)
 - [Backup and persistence considerations](./backup-and-persistence.md)
 
