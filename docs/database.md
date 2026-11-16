@@ -18,13 +18,6 @@ The current API does not serialize structures, read/write files, connect to data
 
 ## Safe future serialization considerations
 
-If persistence is added:
-- Version the serialized format.
-- Validate node counts, integer ranges, and structure.
-- Reject malformed or cyclic data.
-- Do not deserialize untrusted memory layouts directly.
-- Rebuild AVL heights and verify the balance invariant after loading.
-- Keep file/database concerns separate from tree algorithms.
-- Test round trips, corrupt input, truncation, and compatibility.
+If persistence is added, version the serialized format, validate node counts and integer ranges, reject malformed/cyclic data, never deserialize raw memory layouts, rebuild AVL heights, and test round trips plus corrupt/truncated input.
 
 No database schema, SQL migration, cloud storage, or connection configuration exists in this repository.
