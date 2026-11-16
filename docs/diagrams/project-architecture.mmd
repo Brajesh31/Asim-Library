@@ -1,0 +1,7 @@
+flowchart TD
+  Header["asim_library.h<br/>Public interface"] --> Implementation["asim_library.cpp<br/>Algorithms and ownership"]
+  Header --> Demo["main.cpp<br/>Console demonstration"]
+  Header --> Tests["tests/test_asim_library.cpp<br/>Regression tests"]
+  CMake["CMakeLists.txt"] --> Implementation
+  CMake --> Demo
+  CMake --> Tests
