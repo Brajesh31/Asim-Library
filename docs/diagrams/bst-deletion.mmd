@@ -1,0 +1,17 @@
+flowchart TD
+  A([Delete key]) --> B{Current node null?}
+  B -->|Yes| C[No change]
+  B -->|No| D{Compare target and node}
+  D -->|Smaller| E[Search left subtree]
+  D -->|Larger| F[Search right subtree]
+  D -->|Equal| G{Number of children}
+  G -->|Zero| H[Delete leaf and return null]
+  G -->|One| I[Delete node and return child]
+  G -->|Two| J[Copy in-order successor key]
+  J --> K[Delete successor from right subtree]
+  E --> L([Return updated subtree])
+  F --> L
+  H --> L
+  I --> L
+  K --> L
+  C --> L
