@@ -89,7 +89,11 @@ flowchart TD
   K --> L
 ~~~
 
-See [algorithms](docs/algorithms.md), [architecture](docs/architecture.md), and [diagram index](docs/diagrams/README.md).
+See [project overview](docs/project-overview.md), [algorithms](docs/algorithms.md), [architecture](docs/architecture.md), and [diagram index](docs/diagrams/README.md).
+
+## 🖼️ Visual assets
+
+The repository includes an original SVG project banner and editable Mermaid flowcharts for the stack, BST, AVL rotations, and build/test pipeline. See [asset guidance](assets/README.md) and [diagram catalogue](docs/diagrams/README.md). These are technical illustrations, not screenshots of a GUI.
 
 ## 🗂️ Project structure
 
@@ -254,6 +258,9 @@ Planned improvements are listed in [ROADMAP.md](ROADMAP.md).
 | Guide | Details |
 |---|---|
 | [Documentation index](docs/README.md) | Full documentation catalogue |
+| [Project overview](docs/project-overview.md) | Audience, goals, learning objectives and scope |
+| [Limitations](docs/limitations.md) | Current boundaries and unsupported capabilities |
+| [Persistence strategy](docs/backup-and-persistence.md) | In-memory behavior and future serialization guidance |
 | [API reference](docs/api.md) | Class contracts, method behavior and exceptions |
 | [Algorithms](docs/algorithms.md) | Stack, BST and AVL algorithms |
 | [Architecture](docs/architecture.md) | Modules and ownership |
