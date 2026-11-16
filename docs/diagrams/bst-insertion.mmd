@@ -1,0 +1,11 @@
+flowchart TD
+  A([Insert key]) --> B{Current node null?}
+  B -->|Yes| C[Allocate node]
+  B -->|No| D{Key compared with node}
+  D -->|Smaller| E[Recurse left]
+  D -->|Larger| F[Recurse right]
+  D -->|Equal| G[Ignore duplicate]
+  E --> B
+  F --> B
+  C --> H([Return updated root])
+  G --> H
