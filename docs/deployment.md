@@ -6,7 +6,7 @@ Asim-Library is a native C++ library, not a network service. There is no server 
 
 ## Current consumption model
 
-Consumers compile asim_library.cpp into their own application and include asim_library.h. The included CMake project creates a local library target named asim_library, an alias AsimLibrary::asim_library, a demonstration executable, and a test executable.
+Consumers compile asim_library.cpp into their own application and include asim_library.h. The included CMake project creates a local library target, demo executable, and test executable.
 
 ## Build for a consumer
 
@@ -15,7 +15,7 @@ cmake -S . -B build -DASIM_LIBRARY_BUILD_DEMO=OFF -DASIM_LIBRARY_BUILD_TESTS=OFF
 cmake --build build --parallel
 ~~~
 
-The current CMake file is a local project build and does not yet define install/export/package-config rules. Consumers can use the source tree directly. A future release can add CMake install/export targets and versioned package metadata.
+The current CMake file does not define install/export/package-config rules. Consumers can use the source tree directly. A future release can add CMake install/export targets and versioned package metadata.
 
 ## Distribution checklist
 
@@ -29,8 +29,6 @@ The current CMake file is a local project build and does not yet define install/
 
 ## Versioning
 
-The current project has no formal binary ABI compatibility guarantee. If prebuilt libraries are published later, define platform/toolchain matrix, semantic versioning policy, ABI expectations, artifact naming, and release checks before promising compatibility.
+The project has no formal binary ABI compatibility guarantee. If prebuilt libraries are published later, define platform/toolchain matrix, semantic versioning policy, ABI expectations, artifact naming, and release checks before promising compatibility.
 
-## Runtime dependencies and persistence
-
-There are no third-party runtime dependencies and no persistence layer. All data structures are process-local and in-memory. Any serialization or database integration belongs to a separate design change.
+There are no third-party runtime dependencies and no persistence layer.
